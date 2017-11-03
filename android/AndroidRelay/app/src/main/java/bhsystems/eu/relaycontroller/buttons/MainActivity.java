@@ -1,4 +1,4 @@
-package bhsystems.eu.relaycontroller;
+package bhsystems.eu.relaycontroller.buttons;
 
 import android.content.Context;
 import android.net.nsd.NsdManager;
@@ -7,17 +7,22 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
-
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity {
+import bhsystems.eu.relaycontroller.R;
+import bhsystems.eu.relaycontroller.entity.RelayControllerButton;
+
+public class MainActivity extends AppCompatActivity implements ButtonsAdapter.ButtonSelectedListener {
+    private static final String BUTTONS = "buttons";
     // Network Service Discovery related members
 // This allows the app to discover the garagedoor.local
 // "service" on the local network.
@@ -29,14 +34,33 @@ public class MainActivity extends AppCompatActivity {
     public String mRPiAddress;
     // The NSD service type that the RPi exposes.
     private static final String SERVICE_TYPE = "_http._tcp.";
+
+
+    private RecyclerView rvButtons;
+    private ButtonsAdapter buttonsAdapter;
+
+    private ArrayList<RelayControllerButton> buttons = new ArrayList<>(Arrays.asList(
+            new RelayControllerButton("Button 1", RelayControllerButton.RelayControllerButtonType.TOGGLE ),
+            new RelayControllerButton("Button 2", RelayControllerButton.RelayControllerButtonType.TOGGLE),
+            new RelayControllerButton("Button 3", RelayControllerButton.RelayControllerButtonType.TOUCH),
+            new RelayControllerButton("Button 4", RelayControllerButton.RelayControllerButtonType.TOUCH),
+            new RelayControllerButton("Button 5", RelayControllerButton.RelayControllerButtonType.TOGGLE)
+    ));
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        rvButtons = findViewById(R.id.rv_buttons);
+
+        if (savedInstanceState != null) {
+            buttons = savedInstanceState.getParcelableArrayList(BUTTONS);
+        }
+
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -47,12 +71,21 @@ public class MainActivity extends AppCompatActivity {
 
 
         mRPiAddress = "";
-        mNsdManager = (NsdManager)(getApplicationContext().getSystemService(Context.NSD_SERVICE));
+        mNsdManager = (NsdManager) (getApplicationContext().getSystemService(Context.NSD_SERVICE));
         initializeResolveListener();
         initializeDiscoveryListener();
         mNsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
+        prepareRecycleView();
+
 
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(BUTTONS, buttons);
+    }
+
     private void initializeDiscoveryListener() {
 
         // Instantiate a new DiscoveryListener
@@ -117,30 +150,22 @@ public class MainActivity extends AppCompatActivity {
                 InetAddress host = mServiceInfo.getHost();
                 String address = host.getHostAddress();
                 Log.d("NSD", "Resolved address = " + address);
-                Toast.makeText(getApplicationContext(),address,Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), address, Toast.LENGTH_LONG).show();
                 mRPiAddress = address;
             }
         };
     }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+
+
+    private void prepareRecycleView() {
+        rvButtons.setLayoutManager(new LinearLayoutManager(this));
+        buttonsAdapter = new ButtonsAdapter(this);
+        buttonsAdapter.addAll(buttons);
+        rvButtons.setAdapter(buttonsAdapter);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    public void onButtonClicked(RelayControllerButton relayControllerButton) {
+        Toast.makeText(MainActivity.this, "Button clicked: " + relayControllerButton.getLabel(), Toast.LENGTH_SHORT).show();
     }
 }
