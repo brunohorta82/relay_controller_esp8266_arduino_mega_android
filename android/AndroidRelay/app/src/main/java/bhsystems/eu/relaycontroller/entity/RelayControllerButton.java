@@ -1,5 +1,8 @@
 package bhsystems.eu.relaycontroller.entity;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
@@ -13,19 +16,54 @@ import static bhsystems.eu.relaycontroller.entity.RelayControllerButton.RelayCon
 /**
  * Created by ivooliveira on 03/11/17.
  */
-
+@Entity
 public class RelayControllerButton implements Parcelable {
 
     private String label;
     private boolean active;
     private @RelayControllerButtonType
     int relayControllerButtonType;
+    @PrimaryKey
+    private Integer pin;
+    @Ignore
+    private boolean enabled;
 
-    public RelayControllerButton(String label, @RelayControllerButtonType int relayControllerButtonType) {
+    public RelayControllerButton(String label, @RelayControllerButtonType int relayControllerButtonType, int pin) {
         this.label = label;
+        this.pin = pin;
         this.relayControllerButtonType = relayControllerButtonType;
     }
 
+
+    protected RelayControllerButton(Parcel in) {
+        label = in.readString();
+        active = in.readByte() != 0;
+        relayControllerButtonType = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(label);
+        dest.writeByte((byte) (active ? 1 : 0));
+        dest.writeInt(relayControllerButtonType);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<RelayControllerButton> CREATOR = new Creator<RelayControllerButton>() {
+        @Override
+        public RelayControllerButton createFromParcel(Parcel in) {
+            return new RelayControllerButton(in);
+        }
+
+        @Override
+        public RelayControllerButton[] newArray(int size) {
+            return new RelayControllerButton[size];
+        }
+    };
 
     public String getLabel() {
         return label;
@@ -52,15 +90,7 @@ public class RelayControllerButton implements Parcelable {
         this.relayControllerButtonType = relayControllerButtonType;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-
-    }
 
     public String getRelayControllerButtonTypeStr() {
         switch (relayControllerButtonType) {
@@ -72,11 +102,27 @@ public class RelayControllerButton implements Parcelable {
         return "";
     }
 
+    public Integer getPin() {
+        return pin;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({TOGGLE, TOUCH})
     public @interface RelayControllerButtonType {
         int TOGGLE = 1;
         int TOUCH = 2;
+    }
+
+    public void setPin(Integer pin) {
+        this.pin = pin;
     }
 }

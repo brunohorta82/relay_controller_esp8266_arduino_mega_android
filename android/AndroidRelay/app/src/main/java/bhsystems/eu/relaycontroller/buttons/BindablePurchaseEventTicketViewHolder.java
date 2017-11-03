@@ -1,5 +1,6 @@
 package bhsystems.eu.relaycontroller.buttons;
 
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -32,6 +33,7 @@ public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<Re
         if (relayControllerButton == null) {
             return;
         }
+        itemView.setBackgroundColor(ResourcesCompat.getColor(itemView.getResources(), relayControllerButton.isEnabled() ? android.R.color.black : android.R.color.darker_gray, itemView.getContext().getTheme()));
         updateButton(relayControllerButton);
         switch (relayControllerButton.getRelayControllerButtonType()) {
             case RelayControllerButton.RelayControllerButtonType.TOGGLE:
@@ -40,7 +42,7 @@ public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<Re
                     public void onClick(View v) {
                         relayControllerButton.setActive(!relayControllerButton.isActive());
                         updateButton(relayControllerButton);
-                        if (buttonSelectedListener != null) {
+                        if (buttonSelectedListener != null && relayControllerButton.isEnabled()) {
                             buttonSelectedListener.onButtonClicked(relayControllerButton);
                         }
                     }
@@ -56,10 +58,16 @@ public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<Re
                                     case MotionEvent.ACTION_CANCEL:
                                         relayControllerButton.setActive(false);
                                         updateButton(relayControllerButton);
+                                        if (buttonSelectedListener != null && relayControllerButton.isEnabled()) {
+                                            buttonSelectedListener.onButtonClicked(relayControllerButton);
+                                        }
                                         return true;
                                     case MotionEvent.ACTION_DOWN:
                                         relayControllerButton.setActive(true);
                                         updateButton(relayControllerButton);
+                                        if (buttonSelectedListener != null && relayControllerButton.isEnabled()) {
+                                            buttonSelectedListener.onButtonClicked(relayControllerButton);
+                                        }
                                         return true;
                                 }
                                 return false;

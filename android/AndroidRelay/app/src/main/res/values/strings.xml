@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">RelayController</string>
     <string name="action_settings">Settings</string>
+    <string name="label">Label</string>
+    <string name="widget_labelled_spinner_errorText">You should select an item</string>
+    <string name="TOGGLE">Toggle Button</string>
+    <string name="TOUCH">Touch Button</string>
 </resources>
