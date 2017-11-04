@@ -5,4 +5,10 @@
     <string name="widget_labelled_spinner_errorText">You should select an item</string>
     <string name="TOGGLE">Toggle Button</string>
     <string name="TOUCH">Touch Button</string>
+    <string name="save">Save</string>
+    <string name="pin">Pin</string>
+    <string name="button_type">Button Type</string>
+    <string name="new_button">New Button</string>
+    <string name="label_missing">Please define the button label</string>
+    <string name="duplicated_pin">This pin is already in use. Please choose another.</string>
 </resources>

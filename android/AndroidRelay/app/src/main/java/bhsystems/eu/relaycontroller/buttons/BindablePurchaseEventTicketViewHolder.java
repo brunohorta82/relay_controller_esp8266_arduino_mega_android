@@ -79,7 +79,7 @@ public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<Re
     }
 
     private void updateButton(RelayControllerButton relayControllerButton) {
-        String lbl = relayControllerButton.getRelayControllerButtonTypeStr() + ": " + relayControllerButton.getLabel() + " " + (relayControllerButton.isActive() ? "ON" : "OFF");
+        String lbl = relayControllerButton.getRelayControllerButtonTypeStr() + ": " + relayControllerButton.getLabel() + " - " + relayControllerButton.getPin() + " " + (relayControllerButton.isActive() ? "ON" : "OFF");
         tvLabel.setText(lbl);
     }
 }

@@ -33,6 +33,7 @@ import bhsystems.eu.relaycontroller.application.RelayControllerApplication;
 import bhsystems.eu.relaycontroller.entity.RelayControllerButton;
 
 public class MainActivity extends AppCompatActivity implements ButtonsAdapter.ButtonSelectedListener {
+    private static final int BUTTON_REQUEST_CODE = 1212;
     private static final String BUTTONS = "buttons";
     // Network Service Discovery related members
 // This allows the app to discover the garagedoor.local
@@ -64,23 +65,14 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(R.string.app_name);
 
         rvButtons = findViewById(R.id.rv_buttons);
 
         if (savedInstanceState != null) {
             buttons = savedInstanceState.getParcelableArrayList(BUTTONS);
         } else {
-            ButtonsLoadAsyncTask buttonsLoadAsyncTask = new ButtonsLoadAsyncTask() {
-                @Override
-                protected void onPostExecute(List<RelayControllerButton> relayControllerButtons) {
-                    super.onPostExecute(relayControllerButtons);
-                    buttons = new ArrayList<>(relayControllerButtons);
-                    prepareRecycleView();
-                    changeButtonsState(false);
-                }
-            };
-            buttonsLoadAsyncTask.execute();
-
+            reloadButtons();
         }
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -89,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                startActivity(new Intent(MainActivity.this, NewButtonActivity.class));
+                startActivityForResult(new Intent(MainActivity.this, NewButtonActivity.class), BUTTON_REQUEST_CODE);
             }
         });
         mRPiAddress = "";
@@ -217,10 +209,36 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
         queue.add(stringRequest);
         Toast.makeText(MainActivity.this, "Button clicked: " + relayControllerButton.getLabel(), Toast.LENGTH_SHORT).show();
     }
+
     static class ButtonsLoadAsyncTask extends AsyncTask<Void, Void, List<RelayControllerButton>> {
         @Override
         protected List<RelayControllerButton> doInBackground(Void... voids) {
             return RelayControllerApplication.getInstance().getDb().relayControllerButtonDao().getAll();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case BUTTON_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    reloadButtons();
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void reloadButtons() {
+        ButtonsLoadAsyncTask buttonsLoadAsyncTask = new ButtonsLoadAsyncTask() {
+            @Override
+            protected void onPostExecute(List<RelayControllerButton> relayControllerButtons) {
+                super.onPostExecute(relayControllerButtons);
+                buttons = new ArrayList<>(relayControllerButtons);
+                prepareRecycleView();
+                changeButtonsState(false);
+            }
+        };
+        buttonsLoadAsyncTask.execute();
     }
 }

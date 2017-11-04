@@ -1,27 +1,29 @@
 package bhsystems.eu.relaycontroller.buttons;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import java.text.Normalizer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Locale;
 
 import bhsystems.eu.relaycontroller.R;
+import bhsystems.eu.relaycontroller.application.RelayControllerApplication;
 import bhsystems.eu.relaycontroller.entity.RelayControllerButton;
-import bhsystems.eu.relaycontroller.utils.spinner.RCSpinnerHelper;
 import bhsystems.eu.relaycontroller.utils.spinner.RCLabelledSpinner;
+import bhsystems.eu.relaycontroller.utils.spinner.RCSpinnerHelper;
 
 /**
  * Created by brunohorta on 03/11/2017.
@@ -34,6 +36,7 @@ public class NewButtonActivity extends AppCompatActivity {
     private EditText etPoints;
     private TextInputLayout tilLabel;
     private RCLabelledSpinner rcLabelledSpinner;
+    private TextView tvPinLbl;
 
     private final Handler repeatUpdateHandler = new Handler();
     private boolean mAutoIncrement = false;
@@ -51,12 +54,26 @@ public class NewButtonActivity extends AppCompatActivity {
         ibPlus = findViewById(R.id.ib_plus);
         etPoints = findViewById(R.id.et_points);
         tilLabel = findViewById(R.id.input_layout_label);
+        tvPinLbl = findViewById(R.id.tv_pin_lbl);
         rcLabelledSpinner = findViewById(R.id.sp_type);
-
         relayControllerButton = new RelayControllerButton("", RelayControllerButton.RelayControllerButtonType.TOGGLE, 23);
+
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setTitle(R.string.new_button);
 
         initPin();
         initTypesSpinner();
+
+
+        findViewById(R.id.btn_save).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveNewButton();
+            }
+        });
     }
 
     private void initPin() {
@@ -171,5 +188,43 @@ public class NewButtonActivity extends AppCompatActivity {
         });
         rcLabelledSpinner.setItemsArray(helper.toArray(new RCSpinnerHelper[helper.size()]));
         rcLabelledSpinner.setSelection(0);
+    }
+
+    private void saveNewButton() {
+        relayControllerButton.setLabel(tilLabel.getEditText().getText().toString());
+        relayControllerButton.setPin(Integer.parseInt(etPoints.getText().toString()));
+        relayControllerButton.setRelayControllerButtonType(((RCSpinnerHelper) rcLabelledSpinner.getSelectedItem()).getOrdinal());
+        tilLabel.setError(null);
+        tvPinLbl.setText(null);
+        if (relayControllerButton.getLabel().isEmpty()) {
+            tilLabel.setError(getString(R.string.label_missing));
+            return;
+        }
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected void onPostExecute(final Boolean result) {
+                super.onPostExecute(result);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (result != null && result) {
+                            setResult(RESULT_OK);
+                            finish();
+                        } else {
+                            tvPinLbl.setText(getString(R.string.duplicated_pin));
+                        }
+                    }
+                });
+            }
+
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                if (RelayControllerApplication.getInstance().getDb().relayControllerButtonDao().findByPin(relayControllerButton.getPin()) == null) {
+                    RelayControllerApplication.getInstance().getDb().relayControllerButtonDao().insertAll(relayControllerButton);
+                    return true;
+                }
+                return false;
+            }
+        }.execute();
     }
 }
