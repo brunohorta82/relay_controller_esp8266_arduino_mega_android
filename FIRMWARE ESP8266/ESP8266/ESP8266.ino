@@ -7,8 +7,8 @@
 #include <ESP8266mDNS.h>
 #include <SoftwareSerial.h>
 
-#define WIRE_SDA 4
-#define WIRE_SCL 5
+#define WIRE_SDA 0
+#define WIRE_SCL 2
 const String HOSTNAME  = "relaycontroller";
 // TCP server at port 80 will respond to HTTP requests
 WiFiServer server(80);
@@ -81,7 +81,7 @@ void loop(void)
      Wire.beginTransmission(21);
     Wire.write(a); // one must mean something to the mega, 
     Wire.endTransmission();
-    s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html>";
+    s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n";
  
  
      Wire.requestFrom(21,30);
@@ -93,7 +93,7 @@ void loop(void)
     Serial.println(s);
 
     }
-       s += "</html>\r\n\r\n";
+       s += "\r\n\r\n";
   }
   client.print(s);
   

@@ -34,9 +34,7 @@ public class RelayControllerApplication extends Application {
             @Override
             protected Void doInBackground(AppDatabase... params) {
                 AppDatabase db = params[0];
-                if(db.relayControllerButtonDao().count() == 0){
-                    db.relayControllerButtonDao().insertAll(new RelayControllerButton("Button 1", RelayControllerButton.RelayControllerButtonType.TOGGLE, 1));
-                }
+
                 return null;
             }
         }.execute(db);

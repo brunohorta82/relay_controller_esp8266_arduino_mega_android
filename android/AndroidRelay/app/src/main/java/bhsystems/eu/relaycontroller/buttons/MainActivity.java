@@ -51,13 +51,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
     private RecyclerView rvButtons;
     private ButtonsAdapter buttonsAdapter;
 
-    private ArrayList<RelayControllerButton> buttons = new ArrayList<>(Arrays.asList(
-            new RelayControllerButton("Button 1", RelayControllerButton.RelayControllerButtonType.TOGGLE, 1),
-            new RelayControllerButton("Button 2", RelayControllerButton.RelayControllerButtonType.TOGGLE, 2),
-            new RelayControllerButton("Button 3", RelayControllerButton.RelayControllerButtonType.TOUCH, 3),
-            new RelayControllerButton("Button 4", RelayControllerButton.RelayControllerButtonType.TOUCH, 4),
-            new RelayControllerButton("Button 5", RelayControllerButton.RelayControllerButtonType.TOGGLE, 5)
-    ));
+    private ArrayList<RelayControllerButton> buttons = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,14 +159,16 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
         };
     }
 
-    private void changeButtonsState(boolean enabled) {
-        for (RelayControllerButton button : buttons) {
-            button.setEnabled(enabled);
-        }
+    private void changeButtonsState(final boolean enabled) {
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if(buttonsAdapter != null)
                 buttonsAdapter.notifyDataSetChanged();
+                for (RelayControllerButton button : buttons) {
+                    button.setEnabled(enabled);
+                }
             }
         });
     }
@@ -223,6 +219,11 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
             case BUTTON_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
                     reloadButtons();
+                    mRPiAddress = "";
+                    mNsdManager = (NsdManager) (getApplicationContext().getSystemService(Context.NSD_SERVICE));
+                    initializeResolveListener();
+                    initializeDiscoveryListener();
+                    mNsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
                 }
                 break;
         }
