@@ -81,7 +81,7 @@ void loop(void)
      Wire.beginTransmission(21);
     Wire.write(a); // one must mean something to the mega, 
     Wire.endTransmission();
-    s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n";
+    s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
  
  
      Wire.requestFrom(21,30);
@@ -93,7 +93,7 @@ void loop(void)
     Serial.println(s);
 
     }
-       s += "\r\n\r\n";
+      
   }
   client.print(s);
   

@@ -17,4 +17,14 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="xpto" />
+
+    <ImageView
+        android:id="@+id/imgState"
+        android:layout_width="20dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/button_onoff_indicator_off" />
 </android.support.constraint.ConstraintLayout>

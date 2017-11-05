@@ -5,7 +5,6 @@ import android.arch.persistence.room.Room;
 import android.os.AsyncTask;
 
 import bhsystems.eu.relaycontroller.database.AppDatabase;
-import bhsystems.eu.relaycontroller.entity.RelayControllerButton;
 
 
 /**
@@ -30,15 +29,6 @@ public class RelayControllerApplication extends Application {
 
     private void initDatabase() {
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "RelayControllerButton").build();
-        new AsyncTask<AppDatabase, Void, Void>() {
-            @Override
-            protected Void doInBackground(AppDatabase... params) {
-                AppDatabase db = params[0];
-
-                return null;
-            }
-        }.execute(db);
-
     }
 
     public static synchronized RelayControllerApplication getInstance() {

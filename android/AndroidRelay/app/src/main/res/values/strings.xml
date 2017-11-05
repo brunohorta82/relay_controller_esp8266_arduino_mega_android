@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RelayController</string>
+    <string name="app_name">SMART CONTROLLER</string>
     <string name="action_settings">Settings</string>
     <string name="label">Label</string>
     <string name="widget_labelled_spinner_errorText">You should select an item</string>

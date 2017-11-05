@@ -1,8 +1,10 @@
 package bhsystems.eu.relaycontroller.buttons;
 
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import bhsystems.eu.relaycontroller.R;
@@ -19,32 +21,32 @@ public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<Re
     public static final int LAYOUT_RES_ID = R.layout.button_recycler_view_item;
 
     TextView tvLabel;
+    ImageView imgState;
 
     private final ButtonsAdapter.ButtonSelectedListener buttonSelectedListener;
 
     public BindablePurchaseEventTicketViewHolder(final View itemView, ButtonsAdapter.ButtonSelectedListener buttonSelectedListener) {
         super(itemView);
         this.buttonSelectedListener = buttonSelectedListener;
-
         tvLabel = itemView.findViewById(R.id.tv_label);
+        imgState = itemView.findViewById(R.id.imgState);
     }
 
     public void bind(final int position, final RelayControllerButton relayControllerButton) {
         if (relayControllerButton == null) {
             return;
         }
-        itemView.setBackgroundColor(ResourcesCompat.getColor(itemView.getResources(), relayControllerButton.isEnabled() ? android.R.color.black : android.R.color.darker_gray, itemView.getContext().getTheme()));
-        updateButton(relayControllerButton);
+        tvLabel.setText(relayControllerButton.getLabel());
+      //TODO  imgState.setImageDrawable(android.support.compat.R.id.);
+        itemView.setBackgroundColor(ResourcesCompat.getColor(itemView.getResources(),android.R.color.black, itemView.getContext().getTheme()));
         switch (relayControllerButton.getRelayControllerButtonType()) {
             case RelayControllerButton.RelayControllerButtonType.TOGGLE:
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         relayControllerButton.setActive(!relayControllerButton.isActive());
-                        updateButton(relayControllerButton);
-                        if (buttonSelectedListener != null && relayControllerButton.isEnabled()) {
-                            buttonSelectedListener.onButtonClicked(relayControllerButton);
-                        }
+                        buttonSelectedListener.onButtonClicked(relayControllerButton);
+
                     }
                 });
                 break;
@@ -57,17 +59,14 @@ public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<Re
                                     case MotionEvent.ACTION_UP:
                                     case MotionEvent.ACTION_CANCEL:
                                         relayControllerButton.setActive(false);
-                                        updateButton(relayControllerButton);
-                                        if (buttonSelectedListener != null && relayControllerButton.isEnabled()) {
-                                            buttonSelectedListener.onButtonClicked(relayControllerButton);
-                                        }
+
+                                        buttonSelectedListener.onButtonClicked(relayControllerButton);
+
                                         return true;
                                     case MotionEvent.ACTION_DOWN:
                                         relayControllerButton.setActive(true);
-                                        updateButton(relayControllerButton);
-                                        if (buttonSelectedListener != null && relayControllerButton.isEnabled()) {
-                                            buttonSelectedListener.onButtonClicked(relayControllerButton);
-                                        }
+
+                                        buttonSelectedListener.onButtonClicked(relayControllerButton);
                                         return true;
                                 }
                                 return false;
@@ -78,8 +77,5 @@ public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<Re
         }
     }
 
-    private void updateButton(RelayControllerButton relayControllerButton) {
-        String lbl = relayControllerButton.getRelayControllerButtonTypeStr() + ": " + relayControllerButton.getLabel() + " - " + relayControllerButton.getPin() + " " + (relayControllerButton.isActive() ? "ON" : "OFF");
-        tvLabel.setText(lbl);
-    }
+
 }
