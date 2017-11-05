@@ -27,7 +27,7 @@ void receiveEvent(int howMany) {
   if(x >22  && x < 54){
     bool state = !digitalRead(x);
     digitalWrite(x,state);
-    states[x-1] = state ? '1' : '0';
+    states[x-23] = state ? '1' : '0';
     Serial.println(x);
   }else{
     Serial.println("Invalid Command");
