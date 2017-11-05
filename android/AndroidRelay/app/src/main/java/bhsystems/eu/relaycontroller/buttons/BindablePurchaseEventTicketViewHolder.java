@@ -37,7 +37,7 @@ public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<Re
             return;
         }
         tvLabel.setText(relayControllerButton.getLabel());
-      //TODO  imgState.setImageDrawable(android.support.compat.R.id.);
+        imgState.setImageDrawable(ResourcesCompat.getDrawable(itemView.getResources(), relayControllerButton.isActive() ? android.R.drawable.button_onoff_indicator_on : android.R.drawable.button_onoff_indicator_off , itemView.getContext().getTheme()));
         itemView.setBackgroundColor(ResourcesCompat.getColor(itemView.getResources(),android.R.color.black, itemView.getContext().getTheme()));
         switch (relayControllerButton.getRelayControllerButtonType()) {
             case RelayControllerButton.RelayControllerButtonType.TOGGLE:
