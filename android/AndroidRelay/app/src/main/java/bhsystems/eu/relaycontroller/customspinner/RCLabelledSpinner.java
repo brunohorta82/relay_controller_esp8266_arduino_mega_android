@@ -7,7 +7,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 /**
- * DFLabelledSpinner
+ * RCLabelledSpinner
  * Created by ivooliveira on 26/01/17.
  */
 

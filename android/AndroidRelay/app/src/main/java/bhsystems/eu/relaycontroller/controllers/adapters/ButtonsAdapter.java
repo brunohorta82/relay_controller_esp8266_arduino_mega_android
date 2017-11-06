@@ -14,7 +14,7 @@ import bhsystems.eu.relaycontroller.controllers.holders.BindableViewHolder;
 import bhsystems.eu.relaycontroller.model.RelayControllerButton;
 
 /**
- * PurchaseTicketAdapter
+ * ButtonsAdapter
  * Created by ivooliveira on 27/03/17.
  */
 
