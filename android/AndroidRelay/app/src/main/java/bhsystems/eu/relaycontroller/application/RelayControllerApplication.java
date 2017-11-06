@@ -15,6 +15,7 @@ public class RelayControllerApplication extends Application {
     private static RelayControllerApplication mInstance;
 
     private AppDatabase db;
+    private String controllerIp;
 
     @Override
     public void onCreate() {
@@ -23,6 +24,13 @@ public class RelayControllerApplication extends Application {
         mInstance.db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "RelayControllerButton").build();
     }
 
+    public String getControllerIp() {
+        return controllerIp;
+    }
+
+    public void setControllerIp(String controllerIp) {
+        this.controllerIp = controllerIp;
+    }
 
     public static synchronized RelayControllerApplication sharedInstance() {
         return mInstance;

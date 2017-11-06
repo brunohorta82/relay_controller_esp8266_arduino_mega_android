@@ -45,7 +45,7 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
     private NsdManager.ResolveListener mResolveListener;
     private NsdServiceInfo mServiceInfo;
 
-    public String controllerIp;
+
 
 
     private RecyclerView rvButtons;
@@ -142,7 +142,7 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
                 InetAddress host = mServiceInfo.getHost();
                 String address = host.getHostAddress();
                 Log.d("NSD", "Resolved address = " + address);
-                controllerIp = address;
+                RelayControllerApplication.sharedInstance().setControllerIp(address);
                 sendRequestToController(REQUEST_GPIO_STATES);
             }
         };
@@ -164,12 +164,12 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
     }
 
     private void sendRequestToController(int gpIO) {
-        if (controllerIp == null) {
+        if (RelayControllerApplication.sharedInstance().getControllerIp() == null) {
             Toast.makeText(getApplicationContext(), "Controlador não encontrado", Toast.LENGTH_SHORT).show();
             return;
         }
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://" + controllerIp + "/" + gpIO;
+        String url = "http://" + RelayControllerApplication.sharedInstance().getControllerIp() + "/" + gpIO;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -239,11 +239,6 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
             case BUTTON_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
                     new ButtonsRepository(this).execute();
-                    controllerIp = "";
-                    mNsdManager = (NsdManager) (getApplicationContext().getSystemService(Context.NSD_SERVICE));
-                    initializeResolveListener();
-                    initializeDiscoveryListener();
-                    mNsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
                 }
                 break;
         }

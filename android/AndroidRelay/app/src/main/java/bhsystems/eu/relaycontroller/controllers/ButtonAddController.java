@@ -50,6 +50,12 @@ public class ButtonAddController extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_button);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setTitle(R.string.new_button);
+
         ibMinus = findViewById(R.id.ib_minus);
         ibPlus = findViewById(R.id.ib_plus);
         etPoints = findViewById(R.id.et_points);
@@ -59,10 +65,6 @@ public class ButtonAddController extends AppCompatActivity {
         relayControllerButton = new RelayControllerButton("", RelayControllerButton.RelayControllerButtonType.TOGGLE, 23);
 
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setTitle(R.string.new_button);
 
         initPin();
         initTypesSpinner();
