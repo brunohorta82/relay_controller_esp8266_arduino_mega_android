@@ -2,7 +2,6 @@ package bhsystems.eu.relaycontroller.application;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
-import android.os.AsyncTask;
 
 import bhsystems.eu.relaycontroller.database.AppDatabase;
 

@@ -25,7 +25,8 @@ public class RelayControllerButton implements Parcelable {
     int relayControllerButtonType;
     @PrimaryKey
     private Integer pin;
-
+    @Ignore
+    private boolean enabled;
 
     public RelayControllerButton(String label, @RelayControllerButtonType int relayControllerButtonType, int pin) {
         this.label = label;
@@ -104,6 +105,15 @@ public class RelayControllerButton implements Parcelable {
     public Integer getPin() {
         return pin;
     }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({TOGGLE, TOUCH})

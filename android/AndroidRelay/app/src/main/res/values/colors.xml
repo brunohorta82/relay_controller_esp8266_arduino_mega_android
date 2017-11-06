@@ -3,6 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="white">#FFF</color>
 
     <!-- The default color of the widget (label and bottom line). -->
     <color name="widget_labelled_spinner_default">#6D6D6D</color>

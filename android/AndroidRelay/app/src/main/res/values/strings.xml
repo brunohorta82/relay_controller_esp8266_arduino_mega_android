@@ -11,4 +11,7 @@
     <string name="new_button">New Button</string>
     <string name="label_missing">Please define the button label</string>
     <string name="duplicated_pin">This pin is already in use. Please choose another.</string>
+    <string name="gpio">gpio</string>
+    <string name="zero">00</string>
+    <string name="state">estado</string>
 </resources>

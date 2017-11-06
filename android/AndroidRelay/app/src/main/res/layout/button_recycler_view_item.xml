@@ -5,7 +5,23 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/black"
-    android:padding="24dp">
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="16dp">
+
+
+    <ImageView
+        android:id="@+id/img_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/state"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/tv_label"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/button_onoff_indicator_on" />
 
     <TextView
         android:id="@+id/tv_label"
@@ -13,18 +29,45 @@
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/img_state"
+        app:layout_constraintRight_toLeftOf="@+id/tv_gpio_holder"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="xpto" />
 
-    <ImageView
-        android:id="@+id/imgState"
-        android:layout_width="20dp"
+    <TextView
+        android:id="@+id/tv_gpio_holder"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginEnd="16dp"
+        android:text="@string/gpio"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toTopOf="@+id/gpio_label"
+        app:layout_constraintLeft_toRightOf="@+id/tv_label"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/button_onoff_indicator_off" />
+        tools:text="@string/gpio" />
+
+    <TextView
+        android:id="@+id/gpio_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_gpio_holder"
+        app:layout_constraintRight_toRightOf="@+id/tv_gpio_holder"
+        app:layout_constraintTop_toBottomOf="@+id/tv_gpio_holder"
+        tools:text="@string/zero" />
+
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintBottom_toBottomOf="@+id/gpio_label"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_gpio_holder"
+        app:layout_constraintRight_toRightOf="@+id/tv_gpio_holder"
+        app:layout_constraintTop_toTopOf="@+id/tv_gpio_holder"
+        app:srcCompat="@drawable/circle" />
 </android.support.constraint.ConstraintLayout>
