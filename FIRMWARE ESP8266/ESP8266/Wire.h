@@ -29,7 +29,7 @@
 
 
 
-#define BUFFER_LENGTH 30 //CHANGE by Bruno Horta
+#define BUFFER_LENGTH 32 //CHANGE by Bruno Horta
 
 class TwoWire : public Stream
 {

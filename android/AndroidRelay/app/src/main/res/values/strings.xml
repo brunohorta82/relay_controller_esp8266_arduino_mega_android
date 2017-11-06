@@ -1,17 +1,15 @@
 <resources>
-    <string name="app_name">SMART CONTROLLER</string>
-    <string name="action_settings">Settings</string>
-    <string name="label">Label</string>
-    <string name="widget_labelled_spinner_errorText">You should select an item</string>
-    <string name="TOGGLE">Toggle Button</string>
-    <string name="TOUCH">Touch Button</string>
-    <string name="save">Save</string>
-    <string name="pin">Pin</string>
-    <string name="button_type">Button Type</string>
-    <string name="new_button">New Button</string>
-    <string name="label_missing">Please define the button label</string>
-    <string name="duplicated_pin">This pin is already in use. Please choose another.</string>
-    <string name="gpio">gpio</string>
+    <string name="app_name">CONTROLADOR MAKER PT</string>
+    <string name="label">Descrição</string>
+    <string name="TOGGLE">Botão de Estado</string>
+    <string name="TOUCH">Botão de Toque</string>
+    <string name="save">Guardar</string>
+    <string name="pin">Pino</string>
+    <string name="button_type">Tipo</string>
+    <string name="new_button">Novo Botão</string>
+    <string name="label_missing">Defina a descrição</string>
+    <string name="duplicated_pin">O Pino já está em uso. Por favor escolha outro disponivel.</string>
+    <string name="gpio">pino</string>
     <string name="zero">00</string>
     <string name="state">estado</string>
 </resources>

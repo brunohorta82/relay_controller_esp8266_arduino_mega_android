@@ -1,19 +1,19 @@
 #include <Wire.h>
-/**
- * Podem ser ligados relés a partir do pino 1 até ao pino 53
- */
+#define START_PIN 23
+#define END_PIN 53
+#define i2C_ADDRESS 21
+
+
 char states[30];
 
 void setup() {
-  Wire.begin(21);              
+  Wire.begin(i2C_ADDRESS);              
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
-  Serial.begin(9600); 
-  for (int i = 23 ; i < 54; i++){
+  for (int i = START_PIN ; i < END_PIN; i++){
     pinMode(i, OUTPUT);
     digitalWrite(i,LOW);
-    Serial.println(i);
-    states[i-23] = '0';
+    states[i-START_PIN] = '0';
   }  
 }
 
@@ -24,14 +24,10 @@ void loop() {
 
 void receiveEvent(int howMany) {
   int x = Wire.read();
-  if(x >22  && x < 54){
+  if(x >START_PIN  && x < END_PIN){
     bool state = !digitalRead(x);
     digitalWrite(x,state);
-    states[x-23] = state ? '1' : '0';
-    Serial.println(x);
-  }else{
-    Serial.println("Invalid Command");
-    Serial.println(x);
+    states[x-START_PIN] = state ? '1' : '0';
   }
 }
 

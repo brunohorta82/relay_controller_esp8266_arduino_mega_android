@@ -180,7 +180,7 @@ public class LabelledSpinner extends LinearLayout implements AdapterView.OnItemS
 
         mDefaultErrorEnabled =
                 a.getBoolean(R.styleable.LabelledSpinner_defaultErrorEnabled, false);
-        mDefaultErrorText = getResources().getString(R.string.widget_labelled_spinner_errorText);
+        mDefaultErrorText = "";
 
         a.recycle();
     }

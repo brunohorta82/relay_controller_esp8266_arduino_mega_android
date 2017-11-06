@@ -176,7 +176,7 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
                     public void onResponse(String response) {
                         Log.i("RESP", response);
                         if (response.length() == 30) {
-                            for (int i = 0; i < response.length() - 1; i++) {
+                            for (int i = 0; i < response.length() ; i++) {
                                 char s = response.charAt(i);
                                 if (s != '1' && s != '0') {
                                     Toast.makeText(getApplicationContext(), "Erro - Estado inválido", Toast.LENGTH_SHORT).show();

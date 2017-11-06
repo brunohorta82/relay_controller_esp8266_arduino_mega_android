@@ -12,7 +12,7 @@
 const String HOSTNAME  = "relaycontroller";
 // TCP server at port 80 will respond to HTTP requests
 WiFiServer server(80);
-char states[53];
+
 SoftwareSerial swSer(14, 12, false, 256);
 void setup(void)
 {  
