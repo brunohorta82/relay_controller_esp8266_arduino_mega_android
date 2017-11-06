@@ -1,4 +1,4 @@
-package bhsystems.eu.relaycontroller.buttons;
+package bhsystems.eu.relaycontroller.controllers.holders;
 
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.MotionEvent;
@@ -7,10 +7,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import bhsystems.eu.relaycontroller.R;
-import bhsystems.eu.relaycontroller.entity.RelayControllerButton;
-import bhsystems.eu.relaycontroller.utils.BindableViewHolder;
+import bhsystems.eu.relaycontroller.controllers.adapters.ButtonsAdapter;
+import bhsystems.eu.relaycontroller.model.RelayControllerButton;
 
-import static bhsystems.eu.relaycontroller.entity.RelayControllerButton.RelayControllerButtonType.TOGGLE;
+import static bhsystems.eu.relaycontroller.model.RelayControllerButton.RelayControllerButtonType.TOGGLE;
 
 /**
  * BindablePurchaseEventTicketViewHolder
@@ -19,11 +19,11 @@ import static bhsystems.eu.relaycontroller.entity.RelayControllerButton.RelayCon
 
 public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<RelayControllerButton> {
 
-    public static final int LAYOUT_RES_ID = R.layout.button_recycler_view_item;
+   public static final int LAYOUT_RES_ID = R.layout.button_recycler_view_item;
 
-    TextView tvLabel;
-    ImageView imgState;
-    TextView gpioTextView;
+    private TextView tvLabel;
+    private ImageView imgState;
+    private TextView gpioTextView;
 
     private final ButtonsAdapter.ButtonSelectedListener buttonSelectedListener;
 
@@ -39,26 +39,25 @@ public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<Re
         if (relayControllerButton == null) {
             return;
         }
-        if (relayControllerButton.getRelayControllerButtonType() == TOGGLE){
-            imgState.setImageDrawable(ResourcesCompat.getDrawable(itemView.getResources(), relayControllerButton.isActive() ? android.R.drawable.button_onoff_indicator_on : android.R.drawable.button_onoff_indicator_off, itemView.getContext().getTheme()));
-        }else {
-            imgState.setImageResource( R.drawable.ic_touch_app_white_24dp );
-        }
-        gpioTextView.setText(relayControllerButton.getPin().toString());
+
+        itemView.setBackgroundColor(ResourcesCompat.getColor(itemView.getResources(), android.R.color.black, itemView.getContext().getTheme()));
+
+        gpioTextView.setText(String.valueOf(relayControllerButton.getPin()));
         tvLabel.setText(relayControllerButton.getLabel());
-        itemView.setBackgroundColor(ResourcesCompat.getColor(itemView.getResources(),android.R.color.black, itemView.getContext().getTheme()));
+
         switch (relayControllerButton.getRelayControllerButtonType()) {
             case TOGGLE:
+                imgState.setImageDrawable(ResourcesCompat.getDrawable(itemView.getResources(), relayControllerButton.isActive() ? android.R.drawable.button_onoff_indicator_on : android.R.drawable.button_onoff_indicator_off, itemView.getContext().getTheme()));
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        relayControllerButton.setActive(!relayControllerButton.isActive());
                         buttonSelectedListener.onButtonClicked(relayControllerButton);
 
                     }
                 });
                 break;
             case RelayControllerButton.RelayControllerButtonType.TOUCH:
+                imgState.setImageResource(R.drawable.ic_touch_app_white_24dp);
                 itemView.setOnTouchListener(
                         new View.OnTouchListener() {
                             @Override
@@ -66,8 +65,6 @@ public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<Re
                                 switch (event.getAction()) {
                                     case MotionEvent.ACTION_UP:
                                     case MotionEvent.ACTION_CANCEL:
-                                        buttonSelectedListener.onButtonClicked(relayControllerButton);
-                                        return true;
                                     case MotionEvent.ACTION_DOWN:
                                         buttonSelectedListener.onButtonClicked(relayControllerButton);
                                         return true;
@@ -77,6 +74,7 @@ public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<Re
                         }
                 );
                 break;
+                default:
         }
 
 

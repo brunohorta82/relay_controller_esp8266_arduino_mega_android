@@ -1,4 +1,4 @@
-package bhsystems.eu.relaycontroller.utils.spinner;
+package bhsystems.eu.relaycontroller.customspinner;
 
 public class RCSpinnerHelper {
     private final int ordinal;

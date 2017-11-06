@@ -9,7 +9,7 @@ import android.arch.persistence.room.Update;
 
 import java.util.List;
 
-import bhsystems.eu.relaycontroller.entity.RelayControllerButton;
+import bhsystems.eu.relaycontroller.model.RelayControllerButton;
 
 /**
  * Created by ivo on 20/06/2017.

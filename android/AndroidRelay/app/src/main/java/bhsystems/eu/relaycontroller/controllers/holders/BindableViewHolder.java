@@ -1,4 +1,4 @@
-package bhsystems.eu.relaycontroller.utils;
+package bhsystems.eu.relaycontroller.controllers.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

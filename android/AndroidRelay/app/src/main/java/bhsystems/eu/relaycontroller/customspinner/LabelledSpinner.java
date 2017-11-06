@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package bhsystems.eu.relaycontroller.utils.spinner;
+package bhsystems.eu.relaycontroller.customspinner;
 
 import android.annotation.TargetApi;
 import android.content.Context;

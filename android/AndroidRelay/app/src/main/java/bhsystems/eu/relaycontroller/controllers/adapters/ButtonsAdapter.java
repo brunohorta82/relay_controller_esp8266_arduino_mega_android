@@ -1,4 +1,4 @@
-package bhsystems.eu.relaycontroller.buttons;
+package bhsystems.eu.relaycontroller.controllers.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,15 +9,16 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import bhsystems.eu.relaycontroller.entity.RelayControllerButton;
-import bhsystems.eu.relaycontroller.utils.BindableViewHolder;
+import bhsystems.eu.relaycontroller.controllers.holders.BindablePurchaseEventTicketViewHolder;
+import bhsystems.eu.relaycontroller.controllers.holders.BindableViewHolder;
+import bhsystems.eu.relaycontroller.model.RelayControllerButton;
 
 /**
  * PurchaseTicketAdapter
  * Created by ivooliveira on 27/03/17.
  */
 
-class ButtonsAdapter extends RecyclerView.Adapter<BindableViewHolder<RelayControllerButton>> {
+public class ButtonsAdapter extends RecyclerView.Adapter<BindableViewHolder<RelayControllerButton>> {
 
     private final ArrayList<RelayControllerButton> relayControllerButtons;
     private final ButtonSelectedListener buttonSelectedListener;

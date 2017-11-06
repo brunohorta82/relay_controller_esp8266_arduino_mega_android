@@ -1,4 +1,4 @@
-package bhsystems.eu.relaycontroller.buttons;
+package bhsystems.eu.relaycontroller.controllers;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,7 +7,6 @@ import android.net.nsd.NsdServiceInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,19 +29,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bhsystems.eu.relaycontroller.R;
-import bhsystems.eu.relaycontroller.application.RelayControllerApplication;
-import bhsystems.eu.relaycontroller.entity.RelayControllerButton;
 
-public class MainActivity extends AppCompatActivity implements ButtonsAdapter.ButtonSelectedListener {
+import bhsystems.eu.relaycontroller.application.RelayControllerApplication;
+import bhsystems.eu.relaycontroller.controllers.adapters.ButtonsAdapter;
+import bhsystems.eu.relaycontroller.model.RelayControllerButton;
+
+public class ButtonsListController extends AppCompatActivity implements ButtonsAdapter.ButtonSelectedListener {
     private static final int BUTTON_REQUEST_CODE = 1;
-    public static final String CONTROLLER_NAME = "relaycontroller";
-    public static final int RESQUEST_GPIO_STATES = -1;
+    private static final String SERVICE_TYPE = "_http._tcp.";
+    private static final String CONTROLLER_NAME = "relaycontroller";
+    private static final int REQUEST_GPIO_STATES = -1;
+
     private NsdManager mNsdManager;
     private NsdManager.DiscoveryListener mDiscoveryListener;
     private NsdManager.ResolveListener mResolveListener;
     private NsdServiceInfo mServiceInfo;
+
     public String controllerIp;
-    private static final String SERVICE_TYPE = "_http._tcp.";
 
 
     private RecyclerView rvButtons;
@@ -57,13 +60,16 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.app_name);
+
         rvButtons = findViewById(R.id.rv_buttons);
+
         new ButtonsRepository(this).execute();
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(MainActivity.this, NewButtonActivity.class), BUTTON_REQUEST_CODE);
+                startActivityForResult(new Intent(ButtonsListController.this, ButtonAddController.class), BUTTON_REQUEST_CODE);
             }
         });
 
@@ -87,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
 
             @Override
             public void onServiceFound(NsdServiceInfo service) {
-                // A service was found!  Do something with it.
+                // A service was found!
                 String name = service.getServiceName();
                 String type = service.getServiceType();
                 Log.d("NSD", "Service Name=" + name);
@@ -137,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
                 String address = host.getHostAddress();
                 Log.d("NSD", "Resolved address = " + address);
                 controllerIp = address;
-                sendRequestToController(RESQUEST_GPIO_STATES);
+                sendRequestToController(REQUEST_GPIO_STATES);
             }
         };
     }
@@ -179,8 +185,9 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
                                 int itemIndex = 0;
                                 for (RelayControllerButton button : buttons) {
                                     if (button.getPin() == i + 23) {
-                                        if (button.getRelayControllerButtonType() == RelayControllerButton.RelayControllerButtonType.TOGGLE) {
-                                            button.setActive(s == '1');
+                                        boolean realState = s == '1';
+                                        if (button.getRelayControllerButtonType() == RelayControllerButton.RelayControllerButtonType.TOGGLE && button.isActive() != realState ) {
+                                            button.setActive(realState);
                                             buttonsAdapter.notifyItemChanged(itemIndex);
                                         }
                                     }
@@ -204,21 +211,21 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
 
     private static class ButtonsRepository extends AsyncTask<Void, Void, List<RelayControllerButton>> {
 
-        private WeakReference<MainActivity> activityReference;
+        private WeakReference<ButtonsListController> activityReference;
 
         // only retain a weak reference to the activity
-        ButtonsRepository(MainActivity context) {
+        ButtonsRepository(ButtonsListController context) {
             activityReference = new WeakReference<>(context);
         }
 
         @Override
         protected List<RelayControllerButton> doInBackground(Void... params) {
-            return RelayControllerApplication.getInstance().getDb().relayControllerButtonDao().getAll();
+            return RelayControllerApplication.sharedInstance().getDb().relayControllerButtonDao().getAll();
         }
 
         @Override
         protected void onPostExecute(List<RelayControllerButton> result) {
-            MainActivity activity = activityReference.get();
+            ButtonsListController activity = activityReference.get();
             if (activity == null) return;
             activity.buttons.addAll(result);
             activity.prepareRecycleView();

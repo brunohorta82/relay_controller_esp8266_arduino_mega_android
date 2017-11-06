@@ -1,4 +1,4 @@
-package bhsystems.eu.relaycontroller.buttons;
+package bhsystems.eu.relaycontroller.controllers;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,15 +21,15 @@ import java.util.Comparator;
 
 import bhsystems.eu.relaycontroller.R;
 import bhsystems.eu.relaycontroller.application.RelayControllerApplication;
-import bhsystems.eu.relaycontroller.entity.RelayControllerButton;
-import bhsystems.eu.relaycontroller.utils.spinner.RCLabelledSpinner;
-import bhsystems.eu.relaycontroller.utils.spinner.RCSpinnerHelper;
+import bhsystems.eu.relaycontroller.model.RelayControllerButton;
+import bhsystems.eu.relaycontroller.customspinner.RCLabelledSpinner;
+import bhsystems.eu.relaycontroller.customspinner.RCSpinnerHelper;
 
 /**
  * Created by brunohorta on 03/11/2017.
  */
 
-public class NewButtonActivity extends AppCompatActivity {
+public class ButtonAddController extends AppCompatActivity {
 
     private ImageButton ibMinus;
     private ImageButton ibPlus;
@@ -219,8 +219,8 @@ public class NewButtonActivity extends AppCompatActivity {
 
             @Override
             protected Boolean doInBackground(Void... voids) {
-                if (RelayControllerApplication.getInstance().getDb().relayControllerButtonDao().findByPin(relayControllerButton.getPin()) == null) {
-                    RelayControllerApplication.getInstance().getDb().relayControllerButtonDao().insertAll(relayControllerButton);
+                if (RelayControllerApplication.sharedInstance().getDb().relayControllerButtonDao().findByPin(relayControllerButton.getPin()) == null) {
+                    RelayControllerApplication.sharedInstance().getDb().relayControllerButtonDao().insertAll(relayControllerButton);
                     return true;
                 }
                 return false;

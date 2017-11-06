@@ -1,4 +1,4 @@
-package bhsystems.eu.relaycontroller.utils.spinner;
+package bhsystems.eu.relaycontroller.customspinner;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;

@@ -12,10 +12,7 @@ import bhsystems.eu.relaycontroller.database.AppDatabase;
 
 public class RelayControllerApplication extends Application {
 
-    public static final String TAG = RelayControllerApplication.class.getSimpleName();
-
     private static RelayControllerApplication mInstance;
-
 
     private AppDatabase db;
 
@@ -23,14 +20,11 @@ public class RelayControllerApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mInstance = this;
-        mInstance.initDatabase();
+        mInstance.db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "RelayControllerButton").build();
     }
 
-    private void initDatabase() {
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "RelayControllerButton").build();
-    }
 
-    public static synchronized RelayControllerApplication getInstance() {
+    public static synchronized RelayControllerApplication sharedInstance() {
         return mInstance;
     }
 

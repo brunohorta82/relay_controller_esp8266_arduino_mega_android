@@ -51,7 +51,7 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <bhsystems.eu.relaycontroller.utils.spinner.RCLabelledSpinner
+        <bhsystems.eu.relaycontroller.customspinner.RCLabelledSpinner
             android:id="@+id/sp_type"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

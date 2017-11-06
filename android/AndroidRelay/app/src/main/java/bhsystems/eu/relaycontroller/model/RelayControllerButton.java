@@ -1,4 +1,4 @@
-package bhsystems.eu.relaycontroller.entity;
+package bhsystems.eu.relaycontroller.model;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
@@ -10,8 +10,8 @@ import android.support.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import static bhsystems.eu.relaycontroller.entity.RelayControllerButton.RelayControllerButtonType.TOGGLE;
-import static bhsystems.eu.relaycontroller.entity.RelayControllerButton.RelayControllerButtonType.TOUCH;
+import static bhsystems.eu.relaycontroller.model.RelayControllerButton.RelayControllerButtonType.TOGGLE;
+import static bhsystems.eu.relaycontroller.model.RelayControllerButton.RelayControllerButtonType.TOUCH;
 
 /**
  * Created by ivooliveira on 03/11/17.
@@ -25,8 +25,7 @@ public class RelayControllerButton implements Parcelable {
     int relayControllerButtonType;
     @PrimaryKey
     private Integer pin;
-    @Ignore
-    private boolean enabled;
+
 
     public RelayControllerButton(String label, @RelayControllerButtonType int relayControllerButtonType, int pin) {
         this.label = label;
@@ -106,13 +105,6 @@ public class RelayControllerButton implements Parcelable {
         return pin;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
 
 
     @Retention(RetentionPolicy.SOURCE)
