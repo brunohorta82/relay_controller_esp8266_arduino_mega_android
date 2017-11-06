@@ -24,9 +24,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import bhsystems.eu.relaycontroller.R;
@@ -34,18 +34,14 @@ import bhsystems.eu.relaycontroller.application.RelayControllerApplication;
 import bhsystems.eu.relaycontroller.entity.RelayControllerButton;
 
 public class MainActivity extends AppCompatActivity implements ButtonsAdapter.ButtonSelectedListener {
-    private static final int BUTTON_REQUEST_CODE = 1212;
-    private static final String BUTTONS = "buttons";
-    // Network Service Discovery related members
-// This allows the app to discover the garagedoor.local
-// "service" on the local network.
-// Reference: http://developer.android.com/training/connect-devices-wirelessly/nsd.html
+    private static final int BUTTON_REQUEST_CODE = 1;
+    public static final String CONTROLLER_NAME = "relaycontroller";
+    public static final int RESQUEST_GPIO_STATES = -1;
     private NsdManager mNsdManager;
     private NsdManager.DiscoveryListener mDiscoveryListener;
     private NsdManager.ResolveListener mResolveListener;
     private NsdServiceInfo mServiceInfo;
-    public String mRPiAddress;
-    // The NSD service type that the RPi exposes.
+    public String controllerIp;
     private static final String SERVICE_TYPE = "_http._tcp.";
 
 
@@ -60,26 +56,17 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.app_name);
-
+        toolbar.setTitle(R.string.app_name);
         rvButtons = findViewById(R.id.rv_buttons);
-
-        if (savedInstanceState != null) {
-            buttons = savedInstanceState.getParcelableArrayList(BUTTONS);
-        } else {
-            reloadButtons();
-        }
-
+        new ButtonsRepository(this).execute();
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
                 startActivityForResult(new Intent(MainActivity.this, NewButtonActivity.class), BUTTON_REQUEST_CODE);
             }
         });
-        mRPiAddress = "";
+
         mNsdManager = (NsdManager) (getApplicationContext().getSystemService(Context.NSD_SERVICE));
         initializeResolveListener();
         initializeDiscoveryListener();
@@ -87,11 +74,6 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
 
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(BUTTONS, buttons);
-    }
 
     private void initializeDiscoveryListener() {
 
@@ -110,9 +92,10 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
                 String type = service.getServiceType();
                 Log.d("NSD", "Service Name=" + name);
                 Log.d("NSD", "Service Type=" + type);
-                if (type.equals(SERVICE_TYPE) && name.contains("relaycontroller")) {
+                if (type.equals(SERVICE_TYPE) && name.contains(CONTROLLER_NAME)) {
                     Log.d("NSD", "Service Found @ '" + name + "'");
                     mNsdManager.resolveService(service, mResolveListener);
+
                 }
             }
 
@@ -153,25 +136,10 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
                 InetAddress host = mServiceInfo.getHost();
                 String address = host.getHostAddress();
                 Log.d("NSD", "Resolved address = " + address);
-                Toast.makeText(getApplicationContext(), address, Toast.LENGTH_LONG).show();
-                changeButtonsState(true);
-                mRPiAddress = address;
+                controllerIp = address;
+                sendRequestToController(RESQUEST_GPIO_STATES);
             }
         };
-    }
-
-    private void changeButtonsState(final boolean enabled) {
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (buttonsAdapter != null)
-                    buttonsAdapter.notifyDataSetChanged();
-                for (RelayControllerButton button : buttons) {
-                    button.setEnabled(enabled);
-                }
-            }
-        });
     }
 
 
@@ -186,16 +154,20 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
 
     @Override
     public void onButtonClicked(RelayControllerButton relayControllerButton) {
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://" + mRPiAddress + "/" + relayControllerButton.getPin();
+        sendRequestToController(relayControllerButton.getPin());
+    }
 
-// Request a string response from the provided URL.
+    private void sendRequestToController(int gpIO) {
+        if (controllerIp == null) {
+            Toast.makeText(getApplicationContext(), "Controlador não encontrado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "http://" + controllerIp + "/" + gpIO;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
                         Log.i("RESP", response);
                         if (response.length() == 30) {
                             for (int i = 0; i < response.length() - 1; i++) {
@@ -227,15 +199,30 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
                 Log.d("NSD", error.getMessage());
             }
         });
-// Add the request to the RequestQueue.
         queue.add(stringRequest);
-        Toast.makeText(MainActivity.this, "Button clicked: " + relayControllerButton.getLabel(), Toast.LENGTH_SHORT).show();
     }
 
-    static class ButtonsLoadAsyncTask extends AsyncTask<Void, Void, List<RelayControllerButton>> {
+    private static class ButtonsRepository extends AsyncTask<Void, Void, List<RelayControllerButton>> {
+
+        private WeakReference<MainActivity> activityReference;
+
+        // only retain a weak reference to the activity
+        ButtonsRepository(MainActivity context) {
+            activityReference = new WeakReference<>(context);
+        }
+
         @Override
-        protected List<RelayControllerButton> doInBackground(Void... voids) {
+        protected List<RelayControllerButton> doInBackground(Void... params) {
             return RelayControllerApplication.getInstance().getDb().relayControllerButtonDao().getAll();
+        }
+
+        @Override
+        protected void onPostExecute(List<RelayControllerButton> result) {
+            MainActivity activity = activityReference.get();
+            if (activity == null) return;
+            activity.buttons.addAll(result);
+            activity.prepareRecycleView();
+
         }
     }
 
@@ -244,8 +231,8 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
         switch (requestCode) {
             case BUTTON_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
-                    reloadButtons();
-                    mRPiAddress = "";
+                    new ButtonsRepository(this).execute();
+                    controllerIp = "";
                     mNsdManager = (NsdManager) (getApplicationContext().getSystemService(Context.NSD_SERVICE));
                     initializeResolveListener();
                     initializeDiscoveryListener();
@@ -256,16 +243,5 @@ public class MainActivity extends AppCompatActivity implements ButtonsAdapter.Bu
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void reloadButtons() {
-        ButtonsLoadAsyncTask buttonsLoadAsyncTask = new ButtonsLoadAsyncTask() {
-            @Override
-            protected void onPostExecute(List<RelayControllerButton> relayControllerButtons) {
-                super.onPostExecute(relayControllerButtons);
-                buttons = new ArrayList<>(relayControllerButtons);
-                prepareRecycleView();
-                changeButtonsState(false);
-            }
-        };
-        buttonsLoadAsyncTask.execute();
-    }
+
 }
