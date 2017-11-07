@@ -66,9 +66,8 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         toolbar.setTitle("Maker PT");
-
+        setSupportActionBar(toolbar);
         rvButtons = findViewById(R.id.rv_buttons);
 
         new ButtonsRepository(this).execute();
@@ -150,7 +149,7 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
                 String address = host.getHostAddress();
                 Log.d("NSD", "Resolved address = " + address);
                 RelayControllerApplication.sharedInstance().setControllerIp(address);
-                sendRequestToController(REQUEST_GPIO_STATES);
+                sendRequestToController(REQUEST_GPIO_STATES,false);
                 updateLedState();
             }
         };
@@ -171,15 +170,15 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
 
     @Override
     public void onButtonClicked(RelayControllerButton relayControllerButton) {
-        sendRequestToController(relayControllerButton.getPin());
+        sendRequestToController(relayControllerButton.getPin(), (relayControllerButton.getRelayControllerButtonType() == RelayControllerButton.RelayControllerButtonType.TOGGLE));
     }
 private boolean waitingForController = false;
-    private void sendRequestToController(int gpIO) {
+    private void sendRequestToController(int gpIO, boolean toggle) {
         if (RelayControllerApplication.sharedInstance().getControllerIp() == null) {
             invalidateConnection(true);
             return;
         }
-        if(waitingForController)
+        if(waitingForController && toggle)
             return;
         waitingForController = true;
         RequestQueue queue = Volley.newRequestQueue(this);

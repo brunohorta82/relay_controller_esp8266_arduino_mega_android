@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -18,143 +19,152 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:fitsSystemWindows="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_layout_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="12dp"
-            app:errorEnabled="true"
-            app:layout_constraintBottom_toTopOf="@+id/sp_type"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0"
-            app:layout_constraintVertical_chainStyle="packed">
-
-            <android.support.v7.widget.AppCompatEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="18"
-                android:hint="@string/label"
-                android:imeOptions="actionDone"
-                android:inputType="textPersonName"
-                android:maxLength="255"
-                android:textSize="13sp" />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <bhsystems.eu.relaycontroller.customspinner.RCLabelledSpinner
-            android:id="@+id/sp_type"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:textAlignment="center"
-            app:labelText="@string/button_type"
-            app:layout_constraintBottom_toTopOf="@+id/thumb_layout_lbl"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintLeft_toLeftOf="@+id/input_layout_label"
-            app:layout_constraintRight_toRightOf="@+id/input_layout_label"
-            app:layout_constraintTop_toBottomOf="@+id/input_layout_label"
-            app:layout_constraintVertical_bias="0.39" />
-
-        <TextView
-            android:id="@+id/thumb_layout_lbl"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:text="@string/pin"
-            app:layout_constraintBottom_toTopOf="@+id/thumb_layout"
-            app:layout_constraintLeft_toLeftOf="@+id/input_layout_label"
-            app:layout_constraintTop_toBottomOf="@+id/sp_type" />
-
         <android.support.constraint.ConstraintLayout
-            android:id="@+id/thumb_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/tv_pin_lbl"
-            app:layout_constraintLeft_toLeftOf="@+id/input_layout_label"
-            app:layout_constraintRight_toRightOf="@+id/input_layout_label"
-            app:layout_constraintTop_toBottomOf="@+id/thumb_layout_lbl">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-
-            <ImageButton
-                android:id="@+id/ib_minus"
-                android:layout_width="48dp"
-                android:layout_height="0dp"
-                android:layout_marginBottom="0dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginStart="0dp"
-                android:layout_marginTop="0dp"
-                android:background="?android:selectableItemBackground"
-                app:layout_constraintBottom_toBottomOf="@+id/et_points"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:errorEnabled="true"
+                app:layout_constraintBottom_toTopOf="@+id/sp_type"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@+id/et_points"
-                app:layout_constraintTop_toTopOf="@+id/et_points"
-                app:layout_constraintVertical_bias="0.0"
-                app:srcCompat="@drawable/ic_remove_black" />
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0"
+                app:layout_constraintVertical_chainStyle="packed">
 
-            <EditText
-                android:id="@+id/et_points"
-                android:layout_width="wrap_content"
+                <android.support.v7.widget.AppCompatEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="18"
+                    android:hint="@string/label"
+                    android:imeOptions="actionDone"
+                    android:inputType="textCapWords|textPersonName"
+                    android:maxLength="255"
+                    android:textSize="13sp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <bhsystems.eu.relaycontroller.customspinner.RCLabelledSpinner
+                android:id="@+id/sp_type"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:ems="3"
-                android:gravity="center_horizontal"
-                android:inputType="number"
-                android:maxLength="1"
+                android:textAlignment="center"
+                app:labelText="@string/button_type"
+                app:layout_constraintBottom_toTopOf="@+id/thumb_layout_lbl"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintLeft_toLeftOf="@+id/input_layout_label"
+                app:layout_constraintRight_toRightOf="@+id/input_layout_label"
+                app:layout_constraintTop_toBottomOf="@+id/input_layout_label"
+                app:layout_constraintVertical_bias="0.39" />
+
+            <TextView
+                android:id="@+id/thumb_layout_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="@string/pin"
+                app:layout_constraintBottom_toTopOf="@+id/thumb_layout"
+                app:layout_constraintLeft_toLeftOf="@+id/input_layout_label"
+                app:layout_constraintTop_toBottomOf="@+id/sp_type" />
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/thumb_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toTopOf="@+id/tv_pin_lbl"
+                app:layout_constraintLeft_toLeftOf="@+id/input_layout_label"
+                app:layout_constraintRight_toRightOf="@+id/input_layout_label"
+                app:layout_constraintTop_toBottomOf="@+id/thumb_layout_lbl">
+
+
+                <ImageButton
+                    android:id="@+id/ib_minus"
+                    android:layout_width="48dp"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:background="?android:selectableItemBackground"
+                    app:layout_constraintBottom_toBottomOf="@+id/et_points"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/et_points"
+                    app:layout_constraintTop_toTopOf="@+id/et_points"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:srcCompat="@drawable/ic_remove_black" />
+
+                <EditText
+                    android:id="@+id/et_points"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:ems="3"
+                    android:gravity="center_horizontal"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toRightOf="@+id/ib_minus"
+                    app:layout_constraintRight_toLeftOf="@+id/ib_plus"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ImageButton
+                    android:id="@+id/ib_plus"
+                    android:layout_width="48dp"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginTop="0dp"
+                    android:background="?android:selectableItemBackground"
+                    app:layout_constraintBottom_toBottomOf="@+id/et_points"
+                    app:layout_constraintLeft_toRightOf="@+id/et_points"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/et_points"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:srcCompat="@drawable/ic_add_black" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/tv_pin_lbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:gravity="center"
+                android:textColor="@android:color/holo_red_dark"
+                app:layout_constraintBottom_toTopOf="@+id/btn_save"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintLeft_toLeftOf="@+id/input_layout_label"
+                app:layout_constraintRight_toRightOf="@+id/input_layout_label"
+                app:layout_constraintTop_toBottomOf="@+id/thumb_layout" />
+
+            <Button
+                android:id="@+id/btn_save"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/save"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@+id/ib_minus"
-                app:layout_constraintRight_toLeftOf="@+id/ib_plus"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <ImageButton
-                android:id="@+id/ib_plus"
-                android:layout_width="48dp"
-                android:layout_height="0dp"
-                android:layout_marginBottom="0dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginTop="0dp"
-                android:background="?android:selectableItemBackground"
-                app:layout_constraintBottom_toBottomOf="@+id/et_points"
-                app:layout_constraintLeft_toRightOf="@+id/et_points"
+                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/et_points"
-                app:layout_constraintVertical_bias="0.0"
-                app:srcCompat="@drawable/ic_add_black" />
-
+                app:layout_constraintTop_toBottomOf="@+id/tv_pin_lbl"
+                app:layout_constraintVertical_bias="1" />
         </android.support.constraint.ConstraintLayout>
-
-        <TextView
-            android:id="@+id/tv_pin_lbl"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:textColor="@android:color/holo_red_dark"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintLeft_toLeftOf="@+id/input_layout_label"
-            app:layout_constraintRight_toRightOf="@+id/input_layout_label"
-            app:layout_constraintTop_toBottomOf="@+id/thumb_layout" />
-
-        <Button
-            android:id="@+id/btn_save"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/save"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
-    </android.support.constraint.ConstraintLayout>
+    </ScrollView>
 </android.support.design.widget.CoordinatorLayout>
