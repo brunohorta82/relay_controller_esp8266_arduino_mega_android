@@ -36,7 +36,6 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
-
 import java.util.List;
 
 import bhsystems.eu.relaycontroller.R;

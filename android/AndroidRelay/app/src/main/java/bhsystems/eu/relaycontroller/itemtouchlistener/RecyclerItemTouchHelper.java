@@ -6,7 +6,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
 import bhsystems.eu.relaycontroller.controllers.holders.BindableRelayControllerButtonViewHolder;
-import bhsystems.eu.relaycontroller.controllers.holders.BindableViewHolder;
 
 /**
  * Created by ravi on 29/09/17.

@@ -19,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -35,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bhsystems.eu.relaycontroller.R;
-
 import bhsystems.eu.relaycontroller.application.RelayControllerApplication;
 import bhsystems.eu.relaycontroller.controllers.adapters.ButtonsAdapter;
 import bhsystems.eu.relaycontroller.itemtouchlistener.RecyclerItemTouchHelper;

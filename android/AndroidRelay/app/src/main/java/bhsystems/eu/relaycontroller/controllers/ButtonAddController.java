@@ -19,13 +19,12 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 import bhsystems.eu.relaycontroller.R;
 import bhsystems.eu.relaycontroller.application.RelayControllerApplication;
-import bhsystems.eu.relaycontroller.model.RelayControllerButton;
 import bhsystems.eu.relaycontroller.customspinner.RCLabelledSpinner;
 import bhsystems.eu.relaycontroller.customspinner.RCSpinnerHelper;
+import bhsystems.eu.relaycontroller.model.RelayControllerButton;
 
 /**
  * Created by brunohorta on 03/11/2017.
