@@ -55,9 +55,7 @@ public class ButtonAddController extends AppCompatActivity implements View.OnTou
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         toolbar.setTitle(R.string.new_button);
-
         ibMinus = findViewById(R.id.ib_minus);
         ibMinus = findViewById(R.id.ib_minus);
         ibPlus = findViewById(R.id.ib_plus);

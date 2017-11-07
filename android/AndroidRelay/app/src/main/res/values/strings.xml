@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CONTROLADOR MAKER PT</string>
+    <string name="app_name">Maker PT</string>
     <string name="label">Descrição</string>
     <string name="TOGGLE">Botão de Estado</string>
     <string name="TOUCH">Botão de Toque</string>

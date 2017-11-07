@@ -67,7 +67,7 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(R.string.app_name);
+        toolbar.setTitle("Maker PT");
 
         rvButtons = findViewById(R.id.rv_buttons);
 
@@ -308,6 +308,7 @@ private boolean waitingForController = false;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.buttons_list_menu, menu);
+
         final MenuItem menuItem = menu.findItem(R.id.mi_led);
         if (menuItem != null) {
             View actionView = MenuItemCompat.getActionView(menuItem);
