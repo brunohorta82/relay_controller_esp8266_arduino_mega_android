@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import bhsystems.eu.relaycontroller.controllers.holders.BindablePurchaseEventTicketViewHolder;
+import bhsystems.eu.relaycontroller.controllers.holders.BindableRelayControllerButtonViewHolder;
 import bhsystems.eu.relaycontroller.controllers.holders.BindableViewHolder;
 import bhsystems.eu.relaycontroller.model.RelayControllerButton;
 
@@ -33,9 +33,9 @@ public class ButtonsAdapter extends RecyclerView.Adapter<BindableViewHolder<Rela
     public BindableViewHolder<RelayControllerButton> onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        int layoutIdForListItem = BindablePurchaseEventTicketViewHolder.LAYOUT_RES_ID;
+        int layoutIdForListItem = BindableRelayControllerButtonViewHolder.LAYOUT_RES_ID;
         View view = inflater.inflate(layoutIdForListItem, parent, false);
-        return new BindablePurchaseEventTicketViewHolder(view, buttonSelectedListener);
+        return new BindableRelayControllerButtonViewHolder(view, buttonSelectedListener);
 
     }
 
@@ -67,5 +67,18 @@ public class ButtonsAdapter extends RecyclerView.Adapter<BindableViewHolder<Rela
 
     public interface ButtonSelectedListener {
         void onButtonClicked(RelayControllerButton relayControllerButton);
+    }
+
+
+    public void removeItem(RelayControllerButton relayControllerButton) {
+        int i = relayControllerButtons.indexOf(relayControllerButton);
+        if (i == -1) {
+            return;
+        }
+        relayControllerButtons.remove(i);
+        // notify the item removed by position
+        // to perform recycler view delete animations
+        // NOTE: don't call notifyDataSetChanged()
+        notifyItemRemoved(i);
     }
 }

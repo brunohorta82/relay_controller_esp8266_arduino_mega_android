@@ -7,13 +7,19 @@ import android.net.nsd.NsdServiceInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -32,13 +38,15 @@ import bhsystems.eu.relaycontroller.R;
 
 import bhsystems.eu.relaycontroller.application.RelayControllerApplication;
 import bhsystems.eu.relaycontroller.controllers.adapters.ButtonsAdapter;
+import bhsystems.eu.relaycontroller.itemtouchlistener.RecyclerItemTouchHelper;
 import bhsystems.eu.relaycontroller.model.RelayControllerButton;
 
-public class ButtonsListController extends AppCompatActivity implements ButtonsAdapter.ButtonSelectedListener {
+public class ButtonsListController extends AppCompatActivity implements ButtonsAdapter.ButtonSelectedListener, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
     private static final int BUTTON_REQUEST_CODE = 1;
     private static final String SERVICE_TYPE = "_http._tcp.";
     private static final String CONTROLLER_NAME = "relaycontroller";
     private static final int REQUEST_GPIO_STATES = -1;
+    private static final String TAG = ButtonsListController.class.getSimpleName();
 
     private NsdManager mNsdManager;
     private NsdManager.DiscoveryListener mDiscoveryListener;
@@ -46,12 +54,12 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
     private NsdServiceInfo mServiceInfo;
 
 
-
-
     private RecyclerView rvButtons;
     private ButtonsAdapter buttonsAdapter;
 
     private ArrayList<RelayControllerButton> buttons = new ArrayList<>();
+
+    private ImageView ivLed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +152,7 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
                 Log.d("NSD", "Resolved address = " + address);
                 RelayControllerApplication.sharedInstance().setControllerIp(address);
                 sendRequestToController(REQUEST_GPIO_STATES);
+                updateLedState();
             }
         };
     }
@@ -156,6 +165,9 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
         buttonsAdapter = new ButtonsAdapter(this);
         buttonsAdapter.addAll(buttons);
         rvButtons.setAdapter(buttonsAdapter);
+
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rvButtons);
     }
 
     @Override
@@ -170,13 +182,14 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
         }
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "http://" + RelayControllerApplication.sharedInstance().getControllerIp() + "/" + gpIO;
+        queue.cancelAll(TAG);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.i("RESP", response);
                         if (response.length() == 30) {
-                            for (int i = 0; i < response.length() ; i++) {
+                            for (int i = 0; i < response.length(); i++) {
                                 char s = response.charAt(i);
                                 if (s != '1' && s != '0') {
                                     Toast.makeText(getApplicationContext(), "Erro - Estado inválido", Toast.LENGTH_SHORT).show();
@@ -186,7 +199,7 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
                                 for (RelayControllerButton button : buttons) {
                                     if (button.getPin() == i + 23) {
                                         boolean realState = s == '1';
-                                        if (button.getRelayControllerButtonType() == RelayControllerButton.RelayControllerButtonType.TOGGLE && button.isActive() != realState ) {
+                                        if (button.getRelayControllerButtonType() == RelayControllerButton.RelayControllerButtonType.TOGGLE && button.isActive() != realState) {
                                             button.setActive(realState);
                                             buttonsAdapter.notifyItemChanged(itemIndex);
                                         }
@@ -203,10 +216,18 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("NSD", error.getMessage());
+                Log.d("NSD", error.getMessage() == null ? "" : error.getMessage());
+                RelayControllerApplication.sharedInstance().setControllerIp(null);
+                updateLedState();
             }
         });
+        stringRequest.setTag(TAG);
         queue.add(stringRequest);
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        new DeleteButtonTask(this).execute(buttons.get(position));
     }
 
     private static class ButtonsRepository extends AsyncTask<Void, Void, List<RelayControllerButton>> {
@@ -234,6 +255,34 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
         }
     }
 
+    private static class DeleteButtonTask extends AsyncTask<RelayControllerButton, Void, RelayControllerButton[]> {
+
+        private WeakReference<ButtonsListController> activityReference;
+
+        // only retain a weak reference to the activity
+        DeleteButtonTask(ButtonsListController context) {
+            activityReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected RelayControllerButton[] doInBackground(RelayControllerButton... relayControllerButtons) {
+            for (RelayControllerButton relayControllerButton : relayControllerButtons) {
+                RelayControllerApplication.sharedInstance().getDb().relayControllerButtonDao().delete(relayControllerButton);
+            }
+            return relayControllerButtons;
+        }
+
+        @Override
+        protected void onPostExecute(RelayControllerButton[] relayControllerButtons) {
+            for (RelayControllerButton relayControllerButton : relayControllerButtons) {
+                ButtonsListController activity = activityReference.get();
+                activity.buttonsAdapter.removeItem(relayControllerButton);
+            }
+
+
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -246,5 +295,40 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.buttons_list_menu, menu);
+        final MenuItem menuItem = menu.findItem(R.id.mi_led);
+        if (menuItem != null) {
+            View actionView = MenuItemCompat.getActionView(menuItem);
+            ivLed = actionView.findViewById(R.id.iv_led);
+            actionView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (RelayControllerApplication.sharedInstance().getControllerIp() != null) {
+                        return;
+                    }
+                    updateLedState();
+                    mNsdManager.stopServiceDiscovery(mDiscoveryListener);
+                    initializeDiscoveryListener();
+                    mNsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
 
+                }
+            });
+            updateLedState();
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private void updateLedState() {
+        if (ivLed == null) {
+            return;
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ivLed.setImageResource(RelayControllerApplication.sharedInstance().getControllerIp() != null ? R.drawable.ic_led_on : R.drawable.ic_led_off);
+            }
+        });
+    }
 }

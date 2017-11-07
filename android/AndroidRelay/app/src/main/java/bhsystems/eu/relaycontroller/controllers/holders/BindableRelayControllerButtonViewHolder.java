@@ -13,11 +13,11 @@ import bhsystems.eu.relaycontroller.model.RelayControllerButton;
 import static bhsystems.eu.relaycontroller.model.RelayControllerButton.RelayControllerButtonType.TOGGLE;
 
 /**
- * BindablePurchaseEventTicketViewHolder
+ * BindableRelayControllerButtonViewHolder
  * Created by ivooliveira on 08/03/17.
  */
 
-public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<RelayControllerButton> {
+public class BindableRelayControllerButtonViewHolder extends BindableViewHolder<RelayControllerButton> {
 
    public static final int LAYOUT_RES_ID = R.layout.button_recycler_view_item;
 
@@ -25,14 +25,20 @@ public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<Re
     private ImageView imgState;
     private TextView gpioTextView;
 
+    private View viewBackground;
+    private View viewForeground;
+
     private final ButtonsAdapter.ButtonSelectedListener buttonSelectedListener;
 
-    public BindablePurchaseEventTicketViewHolder(final View itemView, ButtonsAdapter.ButtonSelectedListener buttonSelectedListener) {
+    public BindableRelayControllerButtonViewHolder(final View itemView, ButtonsAdapter.ButtonSelectedListener buttonSelectedListener) {
         super(itemView);
         this.buttonSelectedListener = buttonSelectedListener;
         gpioTextView = itemView.findViewById(R.id.gpio_label);
         tvLabel = itemView.findViewById(R.id.tv_label);
         imgState = itemView.findViewById(R.id.img_state);
+
+        viewBackground = itemView.findViewById(R.id.view_background);
+        viewForeground = itemView.findViewById(R.id.view_foreground);
     }
 
     public void bind(final int position, final RelayControllerButton relayControllerButton) {
@@ -80,5 +86,11 @@ public class BindablePurchaseEventTicketViewHolder extends BindableViewHolder<Re
 
     }
 
+    public View getViewBackground() {
+        return viewBackground;
+    }
 
+    public View getViewForeground() {
+        return viewForeground;
+    }
 }

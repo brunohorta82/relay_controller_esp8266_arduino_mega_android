@@ -33,7 +33,7 @@ public interface RelayControllerButtonDao {
     void insertAll(RelayControllerButton... relayControllerButtons);
 
     @Delete
-    void delete(RelayControllerButton podManRecord);
+    void delete(RelayControllerButton relayControllerButton);
 
     @Update
     void updateRelayControllerButton(RelayControllerButton relayControllerButton);

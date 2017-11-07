@@ -59,6 +59,7 @@ public class ButtonAddController extends AppCompatActivity implements View.OnTou
         toolbar.setTitle(R.string.new_button);
 
         ibMinus = findViewById(R.id.ib_minus);
+        ibMinus = findViewById(R.id.ib_minus);
         ibPlus = findViewById(R.id.ib_plus);
         etPoints = findViewById(R.id.et_points);
         tilLabel = findViewById(R.id.input_layout_label);
@@ -129,6 +130,7 @@ public class ButtonAddController extends AppCompatActivity implements View.OnTou
                     }
                     mAutoDecrement = false;
                 }
+                v.performClick();
                 return false;
 
             case R.id.ib_plus:

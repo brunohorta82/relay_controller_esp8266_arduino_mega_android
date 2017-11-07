@@ -191,7 +191,8 @@ public class LabelledSpinner extends LinearLayout implements AdapterView.OnItemS
     private void prepareLayout(Context context) {
         LayoutInflater inflater =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.widget_labelled_spinner, this, true);
+        if(inflater != null)
+            inflater.inflate(R.layout.widget_labelled_spinner, this, true);
 
         setOrientation(LinearLayout.VERTICAL);
         setLayoutParams(new LayoutParams(
