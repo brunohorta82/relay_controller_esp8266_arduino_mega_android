@@ -5,7 +5,6 @@
 #include "Wire.h"
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
-#include <SoftwareSerial.h>
 
 #define WIRE_SDA 0
 #define WIRE_SCL 2
@@ -13,12 +12,7 @@ const String HOSTNAME  = "relaycontroller";
 // TCP server at port 80 will respond to HTTP requests
 WiFiServer server(80);
 
-SoftwareSerial swSer(14, 12, false, 256);
-void setup(void)
-{  
- 
-  Serial.begin(115200);
-   Serial.println(BUFFER_LENGTH);
+void setup(void){ 
   Wire.begin(WIRE_SDA,WIRE_SCL);
   WiFiManager wifiManager;
   //reset saved settings
@@ -49,8 +43,6 @@ void loop(void)
   if (!client) {
     return;
   }
-  Serial.println("");
-  Serial.println("New client");
 
   // Wait for data from client to become available
   while(client.connected() && !client.available()){
@@ -65,39 +57,25 @@ void loop(void)
   int addr_start = req.indexOf(' ');
   int addr_end = req.indexOf(' ', addr_start + 1);
   if (addr_start == -1 || addr_end == -1) {
-    Serial.print("Invalid request: ");
-    Serial.println(req);
     return;
   }
   req = req.substring(addr_start + 1, addr_end);
-  Serial.print("Request: ");
-  Serial.println(req);
   client.flush();
-  
-  String s;
+  String s = "";
   if (req != "/"){
-   req.replace("/","");
+    req.replace("/","");
     int a = req.toInt();
-     Wire.beginTransmission(21);
+    Wire.beginTransmission(21);
     Wire.write(a); // one must mean something to the mega, 
     Wire.endTransmission();
     s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
- 
- 
-     Wire.requestFrom(21,30);
-    
-  while (Wire.available()){
-    //lê os bytes como caracter
-    char a =  Wire.read();
-    s+=a;
-    Serial.println(s);
-
+    Wire.requestFrom(21,30);
+    while (Wire.available()){
+      //lê os bytes como caracter
+      char a =  Wire.read();
+      s+=a;
     }
-      
   }
   client.print(s);
-  
- 
-   
 }
 
