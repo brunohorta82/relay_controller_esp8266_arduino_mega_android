@@ -14,10 +14,12 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import bhsystems.eu.relaycontroller.R;
 import bhsystems.eu.relaycontroller.application.RelayControllerApplication;
@@ -29,7 +31,7 @@ import bhsystems.eu.relaycontroller.customspinner.RCSpinnerHelper;
  * Created by brunohorta on 03/11/2017.
  */
 
-public class ButtonAddController extends AppCompatActivity {
+public class ButtonAddController extends AppCompatActivity implements View.OnTouchListener {
 
     private ImageButton ibMinus;
     private ImageButton ibPlus;
@@ -65,7 +67,6 @@ public class ButtonAddController extends AppCompatActivity {
         relayControllerButton = new RelayControllerButton("", RelayControllerButton.RelayControllerButtonType.TOGGLE, 23);
 
 
-
         initPin();
         initTypesSpinner();
 
@@ -81,8 +82,11 @@ public class ButtonAddController extends AppCompatActivity {
     private void initPin() {
         etPoints.setEnabled(false);
         etPoints.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
-        etPoints.setText(relayControllerButton.getPin() + "");
+        etPoints.setText(String.valueOf(relayControllerButton.getPin()));
 
+
+        ibPlus.setOnTouchListener(this);
+        ibMinus.setOnTouchListener(this);
         ibMinus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,17 +107,6 @@ public class ButtonAddController extends AppCompatActivity {
             }
         });
 
-        ibPlus.setOnTouchListener(new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && (mAutoIncrement || relayControllerButton.getPin() == 53)) {
-                    if (event.getAction() == MotionEvent.ACTION_UP) {
-                        v.performClick();
-                    }
-                    mAutoIncrement = false;
-                }
-                return false;
-            }
-        });
         ibMinus.setOnLongClickListener(
                 new View.OnLongClickListener() {
                     public boolean onLongClick(View arg0) {
@@ -123,8 +116,13 @@ public class ButtonAddController extends AppCompatActivity {
                     }
                 }
         );
-        ibMinus.setOnTouchListener(new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
+        checkAddRemoveBtnStatus();
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (v.getId()) {
+            case R.id.ib_minus:
                 if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && (mAutoDecrement || relayControllerButton.getPin() == 23)) {
                     if (event.getAction() == MotionEvent.ACTION_UP) {
                         v.performClick();
@@ -132,9 +130,19 @@ public class ButtonAddController extends AppCompatActivity {
                     mAutoDecrement = false;
                 }
                 return false;
-            }
-        });
-        checkAddRemoveBtnStatus();
+
+            case R.id.ib_plus:
+                if ((event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) && (mAutoIncrement || relayControllerButton.getPin() == 53)) {
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        v.performClick();
+                    }
+                    mAutoIncrement = false;
+                }
+                return false;
+
+        }
+
+        return false;
     }
 
     class RptUpdater implements Runnable {
@@ -202,31 +210,44 @@ public class ButtonAddController extends AppCompatActivity {
             tilLabel.setError(getString(R.string.label_missing));
             return;
         }
-        new AsyncTask<Void, Void, Boolean>() {
-            @Override
-            protected void onPostExecute(final Boolean result) {
-                super.onPostExecute(result);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (result != null && result) {
-                            setResult(RESULT_OK);
-                            finish();
-                        } else {
-                            tvPinLbl.setText(getString(R.string.duplicated_pin));
-                        }
-                    }
-                });
+        new ButtonsRepositoryStore(this).execute(relayControllerButton);
+    }
+
+
+    private static class ButtonsRepositoryStore extends AsyncTask<RelayControllerButton, Void, Boolean> {
+
+        private WeakReference<ButtonAddController> activityReference;
+
+        // only retain a weak reference to the activity
+        ButtonsRepositoryStore(ButtonAddController context) {
+            activityReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected Boolean doInBackground(RelayControllerButton... params) {
+            if (params.length == 0)
+                return false;
+
+            if (RelayControllerApplication.sharedInstance().getDb().relayControllerButtonDao().findByPin(params[0].getPin()) == null) {
+                RelayControllerApplication.sharedInstance().getDb().relayControllerButtonDao().insertAll(params[0]);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            ButtonAddController activity = activityReference.get();
+            if (activity == null) return;
+            super.onPostExecute(result);
+
+            if (result != null && result) {
+                activity.setResult(RESULT_OK);
+                activity.finish();
+            } else {
+                activity.tvPinLbl.setText(activity.getString(R.string.duplicated_pin));
             }
 
-            @Override
-            protected Boolean doInBackground(Void... voids) {
-                if (RelayControllerApplication.sharedInstance().getDb().relayControllerButtonDao().findByPin(relayControllerButton.getPin()) == null) {
-                    RelayControllerApplication.sharedInstance().getDb().relayControllerButtonDao().insertAll(relayControllerButton);
-                    return true;
-                }
-                return false;
-            }
-        }.execute();
+        }
     }
 }

@@ -227,6 +227,7 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
         protected void onPostExecute(List<RelayControllerButton> result) {
             ButtonsListController activity = activityReference.get();
             if (activity == null) return;
+            activity.buttons.clear();
             activity.buttons.addAll(result);
             activity.prepareRecycleView();
 
