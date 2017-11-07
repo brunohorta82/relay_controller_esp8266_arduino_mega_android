@@ -39,4 +39,11 @@ public class RelayControllerApplication extends Application {
     public AppDatabase getDb() {
         return db;
     }
+
+    public  void lostConnection(){
+        controllerIp = null;
+    }
+    public boolean hasConnection() {
+        return controllerIp != null;
+    }
 }

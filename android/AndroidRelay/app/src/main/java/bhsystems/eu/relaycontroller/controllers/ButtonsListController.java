@@ -81,10 +81,6 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
             }
         });
 
-        mNsdManager = (NsdManager) (getApplicationContext().getSystemService(Context.NSD_SERVICE));
-        initializeResolveListener();
-        initializeDiscoveryListener();
-        mNsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
 
     }
 
@@ -106,10 +102,10 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
                 String type = service.getServiceType();
                 Log.d("NSD", "Service Name=" + name);
                 Log.d("NSD", "Service Type=" + type);
+                invalidateConnection(false);
                 if (type.equals(SERVICE_TYPE) && name.contains(CONTROLLER_NAME)) {
                     Log.d("NSD", "Service Found @ '" + name + "'");
                     mNsdManager.resolveService(service, mResolveListener);
-
                 }
             }
 
@@ -126,11 +122,13 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
             @Override
             public void onStartDiscoveryFailed(String serviceType, int errorCode) {
                 mNsdManager.stopServiceDiscovery(this);
+                invalidateConnection(true);
             }
 
             @Override
             public void onStopDiscoveryFailed(String serviceType, int errorCode) {
                 mNsdManager.stopServiceDiscovery(this);
+                invalidateConnection(true);
             }
         };
     }
@@ -142,6 +140,7 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
             public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
                 // Called when the resolve fails.  Use the error code to debug.
                 Log.e("NSD", "Resolve failed" + errorCode);
+                invalidateConnection(true);
             }
 
             @Override
@@ -174,12 +173,15 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
     public void onButtonClicked(RelayControllerButton relayControllerButton) {
         sendRequestToController(relayControllerButton.getPin());
     }
-
+private boolean waitingForController = false;
     private void sendRequestToController(int gpIO) {
         if (RelayControllerApplication.sharedInstance().getControllerIp() == null) {
-            Toast.makeText(getApplicationContext(), "Controlador não encontrado", Toast.LENGTH_SHORT).show();
+            invalidateConnection(true);
             return;
         }
+        if(waitingForController)
+            return;
+        waitingForController = true;
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "http://" + RelayControllerApplication.sharedInstance().getControllerIp() + "/" + gpIO;
         queue.cancelAll(TAG);
@@ -187,6 +189,7 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        waitingForController = false;
                         Log.i("RESP", response);
                         if (response.length() == 30) {
                             for (int i = 0; i < response.length(); i++) {
@@ -216,13 +219,20 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                waitingForController = false;
                 Log.d("NSD", error.getMessage() == null ? "" : error.getMessage());
-                RelayControllerApplication.sharedInstance().setControllerIp(null);
-                updateLedState();
+                invalidateConnection(true);
             }
         });
         stringRequest.setTag(TAG);
         queue.add(stringRequest);
+    }
+
+    private void invalidateConnection(boolean showToast) {
+        RelayControllerApplication.sharedInstance().lostConnection();
+        if(showToast)
+            Toast.makeText(getApplicationContext(), "Controlador não encontrado", Toast.LENGTH_SHORT).show();
+        updateLedState();
     }
 
     @Override
@@ -305,19 +315,23 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
             actionView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (RelayControllerApplication.sharedInstance().getControllerIp() != null) {
+                    if (RelayControllerApplication.sharedInstance().hasConnection()) {
                         return;
                     }
-                    updateLedState();
-                    mNsdManager.stopServiceDiscovery(mDiscoveryListener);
-                    initializeDiscoveryListener();
-                    mNsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
+                    searchController();
 
                 }
             });
-            updateLedState();
+            searchController();
         }
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private void searchController() {
+        mNsdManager = (NsdManager) (getApplicationContext().getSystemService(Context.NSD_SERVICE));
+        initializeResolveListener();
+        initializeDiscoveryListener();
+        mNsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
     }
 
     private void updateLedState() {
@@ -327,8 +341,14 @@ public class ButtonsListController extends AppCompatActivity implements ButtonsA
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ivLed.setImageResource(RelayControllerApplication.sharedInstance().getControllerIp() != null ? R.drawable.ic_led_on : R.drawable.ic_led_off);
+                ivLed.setImageResource(RelayControllerApplication.sharedInstance().hasConnection() ? R.drawable.ic_led_on : R.drawable.ic_led_off);
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mNsdManager.stopServiceDiscovery(mDiscoveryListener);
     }
 }
